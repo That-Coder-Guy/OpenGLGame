@@ -6,6 +6,7 @@ import OpenGL.GL as opengl
 import glfw as openglfw
 
 
+# Make
 if not openglfw.init():
     raise ImportError("Graphics Library Framework could not initialize")
 
