@@ -6,7 +6,7 @@ import OpenGL.GL as opengl
 import glfw as openglfw
 
 
-# Make
+# Make sure OpenGL framework can initialize
 if not openglfw.init():
     raise ImportError("Graphics Library Framework could not initialize")
 
@@ -24,7 +24,7 @@ class GameWindow:
     def __init__(self) -> None:
 
         # Create graphics window
-        self.window = openglfw.create_window(*settings.window_base_size, settings.WINDOW_TITLE, None, None)
+        self.window = openglfw.create_window(*settings.window_size, settings.WINDOW_TITLE, None, None)
         if not self.window:
             openglfw.terminate()
             raise Exception("Graphics window creation failed.")
@@ -32,7 +32,11 @@ class GameWindow:
         openglfw.make_context_current(self.window)
         openglfw.set_key_callback(self.window, self.handle_keyboard_event)
 
-        self.test = components.Test(self.window)
+        self.scenes = [components.TestScene(self.window)]
+        self.current_scene = 0
+
+    def get_current_scene(self) -> components.Scene:
+        return
 
     def mainloop(self) -> None:
         frame_interval = 1.0 / 60
@@ -57,7 +61,7 @@ class GameWindow:
     def render(self) -> None:
         # Clear the color buffer and depth buffer
         opengl.glClear(opengl.GL_COLOR_BUFFER_BIT | opengl.GL_DEPTH_BUFFER_BIT)
-        self.test.run()
+        self.test.call()
         openglfw.swap_buffers(self.window)
 
 

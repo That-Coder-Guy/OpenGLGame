@@ -2,12 +2,14 @@ import OpenGL.GL as opengl
 import OpenGL.GLU as openglu
 import glfw as openglfw
 import time
+import json
+import os
+import settings
 
 
 class Scene:
     def __init__(self, window: openglfw._GLFWwindow) -> None:
         self.window = window
-        self.is_setup = False
 
     def setup(self) -> None:
         pass
@@ -18,20 +20,12 @@ class Scene:
     def draw(self) -> None:
         pass
 
-    def loop(self) -> None:
+    def call(self) -> None:
         self.update()
         self.draw()
 
-    def run(self) -> None:
-        if self.is_setup:
-            self.loop()
-        else:
-            self.setup()
-            self.loop()
-            self.is_setup = True
 
-
-class Test(Scene):
+class TestScene(Scene):
     def __init__(self, window: openglfw._GLFWwindow):
         super().__init__(window=window)
         self.cube_vertices = ((1, 1, 1), (1, 1, -1), (1, -1, -1), (1, -1, 1),
@@ -49,7 +43,6 @@ class Test(Scene):
     def update(self) -> None:
         opengl.glRotatef(1, 1, 1, 1)
 
-
     def draw(self) -> None:
         opengl.glBegin(opengl.GL_LINES)
         for edge in self.cube_edges:
@@ -58,3 +51,24 @@ class Test(Scene):
         opengl.glEnd()
 
 
+class LocalStorage(dict):
+    def __init__(self, filename: str, default: dict):
+        self.filename = filename
+        if not os.path.exists(self.filename):
+            with open(filename, "w") as file:
+                json.dump(default, file)
+
+        with open(self.filename, "r") as file:
+            data = json.load(file)
+            print(data)
+            super().__init__(data)
+
+    def save_to_disk(self) -> None:
+        with open(self.filename, "w") as file:
+            json.dump(self, file)
+
+
+storage = LocalStorage("preferences.json", settings.DEFAULT_PREFERENCES)
+print(storage["base_window_size"])
+storage["base_window_size"] = [100, 100]
+storage.save_to_disk()
