@@ -13,15 +13,18 @@ class Scene:
     def setup(self) -> None:
         pass
 
+    def call(self) -> None:
+        self.update()
+        self.draw()
+
+    def keyboard_event(self, key: int, action: int, modifier_key: int) -> None:
+        pass
+
     def update(self) -> None:
         pass
 
     def draw(self) -> None:
         pass
-
-    def call(self) -> None:
-        self.update()
-        self.draw()
 
 
 class Window:
@@ -80,14 +83,13 @@ class Window:
 
         openglfw.terminate()
 
-    def keyboard_event(self, window, key, scancode, action, mods) -> None:
-        # TODO: Figure out how to pass inputs to the current scene
-        if key == openglfw.KEY_ESCAPE and action == openglfw.PRESS:
-            openglfw.set_window_should_close(window, True)
+    def keyboard_event(self, window, key: int, scancode: int, action: int, modifier_key: int) -> None:
+        self.get_current_scene().keyboard_event(key, action, modifier_key)
+
+
 
     def resize_event(self, window, width: int, height: int) -> None:
         opengl.glViewport(0, 0, width, height)
-        #openglu.glu
         opengl.glMatrixMode(opengl.GL_PROJECTION)
         opengl.glLoadIdentity()
         openglu.gluPerspective(45, (width / max(1, height)), 0.1, 50.0)

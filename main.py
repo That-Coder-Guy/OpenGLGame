@@ -6,6 +6,7 @@ import OpenGL.GL as opengl
 import OpenGL.GLU as openglu
 import glfw as openglfw
 
+
 class TestScene(components.Scene):
     def __init__(self, window):
         super().__init__(window=window)
@@ -20,6 +21,9 @@ class TestScene(components.Scene):
         width, height = openglfw.get_framebuffer_size(self.window)
         openglu.gluPerspective(45, (width / height), 0.1, 50.0)
         opengl.glTranslatef(0.0, 0.0, -5)
+
+    def keyboard_event(self, key: int, action: int, modifier_key: int) -> None:
+        print(key, action, modifier_key)
 
     def update(self) -> None:
         opengl.glRotatef(1, 1, 1, 1)
@@ -42,9 +46,6 @@ class GameWindow(components.Window):
 
         # Set initial scene
         self.set_current_scene(self.scene1)
-
-    def keyboard_event(self, window, key, scancode, action, mods) -> None:
-        super().keyboard_event(window, key, scancode, action, mods)
 
 
 if __name__ == "__main__":
