@@ -3,66 +3,48 @@ import time
 import settings
 import components
 import OpenGL.GL as opengl
+import OpenGL.GLU as openglu
 import glfw as openglfw
 
+class TestScene(components.Scene):
+    def __init__(self, window):
+        super().__init__(window=window)
+        self.cube_vertices = ((1, 1, 1), (1, 1, -1), (1, -1, -1), (1, -1, 1),
+                              (-1, 1, 1), (-1, -1, -1), (-1, -1, 1), (-1, 1, -1))
+        self.cube_edges = ((0, 1), (0, 3), (0, 4), (1, 2), (1, 7), (2, 5),
+                           (2, 3), (3, 6), (4, 6), (4, 7), (5, 6), (5, 7))
+        self.cube_quads = ((0, 3, 6, 4), (2, 5, 6, 3), (1, 2, 5, 7),
+                           (1, 0, 4, 7), (7, 4, 6, 5), (2, 3, 0, 1))
 
-# Make sure OpenGL framework can initialize
-if not openglfw.init():
-    raise ImportError("Graphics Library Framework could not initialize")
+    def setup(self) -> None:
+        width, height = openglfw.get_framebuffer_size(self.window)
+        openglu.gluPerspective(45, (width / height), 0.1, 50.0)
+        opengl.glTranslatef(0.0, 0.0, -5)
+
+    def update(self) -> None:
+        opengl.glRotatef(1, 1, 1, 1)
+
+    def draw(self) -> None:
+        opengl.glBegin(opengl.GL_LINES)
+        for edge in self.cube_edges:
+            for vertex in edge:
+                opengl.glVertex3fv(self.cube_vertices[vertex])
+        opengl.glEnd()
 
 
-#opengl.glViewport(0, 0, *event.size)
-#opengl.glMatrixMode(opengl.GL_PROJECTION)
-#opengl.glLoadIdentity()
-#openglu.gluPerspective(45, (event.size[0] / event.size[1]), 0.1, 50.0)
-#opengl.glTranslatef(0.0, 0.0, -5)
-#opengl.glMatrixMode(opengl.GL_MODELVIEW)
-#opengl.glLoadIdentity()
-
-
-class GameWindow:
+class GameWindow(components.Window):
     def __init__(self) -> None:
+        super().__init__(size=settings.local_storage["base_window_size"],
+                         title=settings.WINDOW_TITLE,
+                         fps=settings.local_storage["fps"])
+        # Initialize scenes
+        self.scene1 = TestScene(self.get_graphics_window())
 
-        # Create graphics window
-        self.window = openglfw.create_window(*settings.window_size, settings.WINDOW_TITLE, None, None)
-        if not self.window:
-            openglfw.terminate()
-            raise Exception("Graphics window creation failed.")
+        # Set initial scene
+        self.set_current_scene(self.scene1)
 
-        openglfw.make_context_current(self.window)
-        openglfw.set_key_callback(self.window, self.handle_keyboard_event)
-
-        self.scenes = [components.TestScene(self.window)]
-        self.current_scene = 0
-
-    def get_current_scene(self) -> components.Scene:
-        return
-
-    def mainloop(self) -> None:
-        frame_interval = 1.0 / 60
-        while not openglfw.window_should_close(self.window):
-            frame_start_time = time.time()
-
-            # Your main loop logic and rendering code go here
-            openglfw.poll_events()
-            self.render()
-
-            # Calculate the time elapsed in this frame
-            frame_elapsed_time = time.time() - frame_start_time
-            time_to_sleep = max(0, frame_interval - frame_elapsed_time)
-            print(time_to_sleep, frame_interval)
-            time.sleep(time_to_sleep)
-        openglfw.terminate()
-
-    def handle_keyboard_event(self, window, key, scancode, action, mods) -> None:
-        if key == openglfw.KEY_ESCAPE and action == openglfw.PRESS:
-            openglfw.set_window_should_close(window, True)
-
-    def render(self) -> None:
-        # Clear the color buffer and depth buffer
-        opengl.glClear(opengl.GL_COLOR_BUFFER_BIT | opengl.GL_DEPTH_BUFFER_BIT)
-        self.test.call()
-        openglfw.swap_buffers(self.window)
+    def keyboard_event(self, window, key, scancode, action, mods) -> None:
+        super().keyboard_event(window, key, scancode, action, mods)
 
 
 if __name__ == "__main__":
