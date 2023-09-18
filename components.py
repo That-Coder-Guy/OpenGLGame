@@ -17,9 +17,6 @@ class Scene:
         self.update()
         self.draw()
 
-    def keyboard_event(self, key: int, action: int, modifier_key: int) -> None:
-        pass
-
     def update(self) -> None:
         pass
 
@@ -40,7 +37,6 @@ class Window:
             raise Exception("Graphics window creation failed.")
 
         openglfw.make_context_current(self.graphics_window)
-        openglfw.set_key_callback(self.graphics_window, self.keyboard_event)
         openglfw.set_window_size_callback(self.graphics_window, self.resize_event)
         openglfw.set_window_close_callback(self.graphics_window, self.close_event)
 
@@ -76,17 +72,13 @@ class Window:
 
             # Calculate the time elapsed in this frame
             frame_elapsed_time = time.time() - frame_start_time
+            print(f"{round(frame_elapsed_time / self.get_frame_interval() * 100)}%")
 
             # Sleep for the rest of the frame interval if ahead
             time_to_sleep = max(0.0, self.get_frame_interval() - frame_elapsed_time)
             time.sleep(time_to_sleep)
 
         openglfw.terminate()
-
-    def keyboard_event(self, window, key: int, scancode: int, action: int, modifier_key: int) -> None:
-        self.get_current_scene().keyboard_event(key, action, modifier_key)
-
-
 
     def resize_event(self, window, width: int, height: int) -> None:
         opengl.glViewport(0, 0, width, height)
