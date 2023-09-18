@@ -78,15 +78,6 @@ class TestScene(components.Scene):
         width, height = openglfw.get_framebuffer_size(self.window)
         openglfw.set_cursor_pos(self.window, round(width / 2), round(height / 2))
 
-    def draw_cube_frame(self, x: float, y: float, z: float) -> None:
-        opengl.glBegin(opengl.GL_LINES)
-        for edge in self.cube_edges:
-            for vertex in edge:
-                opengl.glVertex3fv((self.cube_vertices[vertex][0] + x,
-                                    self.cube_vertices[vertex][1] + y,
-                                    self.cube_vertices[vertex][2] + z))
-        opengl.glEnd()
-
     def draw_cube(self, x: float, y: float, z: float) -> None:
         opengl.glBegin(opengl.GL_QUADS)
         for face in self.cube_faces:
@@ -97,7 +88,6 @@ class TestScene(components.Scene):
         opengl.glEnd()
 
     def draw(self) -> None:
-
         opengl.glColor(1.0, 0.0, 0.0)
         self.draw_cube(0, 0, 0)
         opengl.glColor(0.0, 1.0, 0.0)
