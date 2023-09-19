@@ -6,6 +6,20 @@ import OpenGL.GLU as openglu
 import glfw as openglfw
 
 
+class MainMenu(Scene):
+    def __init__(self, window: Window):
+        super().__init__(window=window)
+
+    def setup(self) -> None:
+        pass
+
+    def update(self) -> None:
+        pass
+
+    def draw(self) -> None:
+        pass
+
+
 class RenderTest(Scene):
     def __init__(self, window: Window):
         super().__init__(window=window)
@@ -89,13 +103,18 @@ class RenderTest(Scene):
 
 
 if __name__ == "__main__":
+    # Initialize game window
     game = Window()
 
+    # Set window settings
     game.set_size(settings.local_storage["base_window_size"])
     game.set_title(settings.WINDOW_TITLE)
     game.set_fps(settings.local_storage["fps"])
 
+    # Add required scenes
+    game.add_scene_reference("main-menu", MainMenu)
     game.add_scene_reference("test-0", RenderTest)
 
+    # Set first scene and run the game
     game.set_current_scene(game.get_scene_reference("test-0"))
     game.mainloop()
